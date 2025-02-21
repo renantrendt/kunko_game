@@ -1,127 +1,116 @@
+import sys
 import pygame
 import random
-import sys
+
+from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, BLUE, GREEN
+from src.player_sprites import Duck, Lumberjack, Bullet
+from src.environment_sprites import Cloud, Eagle, Spikes
+from src.game_logic import GameState
+from src.game_events import handle_events, check_collisions, show_game_over_popup
 
 # Inicialização do Pygame
 pygame.init()
 
 # Configurações da tela
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Kunko o Patinho Peidorreiro")
 
-# Cores
-WHITE = (255, 255, 255)
-BLUE = (135, 206, 235)
-GREEN = (34, 139, 34)
-
-# Classe do Patinho
-class Duck(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill((255, 255, 0))  # Temporariamente amarelo
-        self.rect = self.image.get_rect()
-        self.rect.x = 100
-        self.rect.y = SCREEN_HEIGHT - 100
-        self.velocity_y = 0
-        self.jumping = False
-        self.fart_power = 0
-
-    def update(self):
-        # Gravidade
-        self.velocity_y += 0.5
-        self.rect.y += self.velocity_y
-
-        # Limitar ao chão
-        if self.rect.bottom > SCREEN_HEIGHT - 50:
-            self.rect.bottom = SCREEN_HEIGHT - 50
-            self.velocity_y = 0
-            self.jumping = False
-
-        # Limitar ao topo
-        if self.rect.top < 0:
-            self.rect.top = 0
-            self.velocity_y = 0
-
-    def jump(self):
-        if not self.jumping:
-            self.velocity_y = -12
-            self.jumping = True
-
-    def fart(self):
-        self.velocity_y = -15
-        self.fart_power = 10
-
-# Classe da Nuvem
-class Cloud(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((100, 40))
-        self.image.fill(WHITE)
-        self.rect = self.image.get_rect()
-        self.rect.x = SCREEN_WIDTH
-        self.rect.y = random.randint(100, SCREEN_HEIGHT - 200)
-        self.speed = random.randint(2, 4)
-
-    def update(self):
-        self.rect.x -= self.speed
-        if self.rect.right < 0:
-            self.rect.x = SCREEN_WIDTH
-            self.rect.y = random.randint(100, SCREEN_HEIGHT - 200)
-
-# Criação dos sprites
-all_sprites = pygame.sprite.Group()
-clouds = pygame.sprite.Group()
-duck = Duck()
-all_sprites.add(duck)
-
-# Criar algumas nuvens iniciais
-for i in range(4):
-    cloud = Cloud()
-    cloud.rect.x = random.randint(0, SCREEN_WIDTH)
-    all_sprites.add(cloud)
-    clouds.add(cloud)
+# Fonte para pontuação
+font = pygame.font.Font(None, 36)
 
 # Clock para controle de FPS
 clock = pygame.time.Clock()
 
+def reset_game():
+    # Limpar todos os sprites
+    all_sprites.empty()
+    clouds.empty()
+    eagles.empty()
+    bullets.empty()
+    spikes.empty()
+    
+    # Recriar sprites principais
+    duck = Duck()
+    lumberjack = Lumberjack()
+    
+    # Adicionar sprites ao grupo
+    all_sprites.add(duck)
+    all_sprites.add(lumberjack)
+    all_sprites.add(lumberjack.shotgun)
+    
+    # Recriar nuvens com lógica de spawn
+    for _ in range(10):  # Criar 10 nuvens iniciais
+        cloud = Cloud()
+        cloud.rect.x = random.randint(0, SCREEN_WIDTH)
+        cloud.rect.y = random.randint(0, SCREEN_HEIGHT // 2)  # Metade superior da tela
+        clouds.add(cloud)
+        all_sprites.add(cloud)
+    
+    # Reiniciar estado do jogo
+    game_state.reset()
+    
+    return duck, lumberjack
+
+# Grupos de sprites
+all_sprites = pygame.sprite.Group()
+clouds = pygame.sprite.Group()
+eagles = pygame.sprite.Group()
+spikes = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+
+# Estado do jogo
+game_state = GameState()
+
+# Inicializar jogo
+duck, lumberjack = reset_game()
+
 # Loop principal do jogo
 running = True
+last_time = pygame.time.get_ticks()
+
 while running:
+    current_time = pygame.time.get_ticks()
+    delta_time = current_time - last_time
+    last_time = current_time
+
     # Eventos
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                duck.jump()
-            elif event.key == pygame.K_SPACE:
-                duck.fart()
+    handle_events(duck, clouds)
 
-    # Input contínuo
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        duck.rect.x -= 5
-    if keys[pygame.K_d]:
-        duck.rect.x += 5
+    # Atualizar lógica do jogo
+    game_state.update_difficulty(delta_time, clouds, all_sprites)
+    game_state.spawn_eagle(eagles, all_sprites)
+    game_state.spawn_spikes(spikes, all_sprites)
+    game_state.shoot_bullet(lumberjack, duck, all_sprites, bullets)
 
-    # Atualização
+    # Atualizar sprites
     all_sprites.update()
 
-    # Colisões com nuvens
-    hits = pygame.sprite.spritecollide(duck, clouds, False)
-    if hits:
-        duck.velocity_y = 0
-        duck.rect.bottom = hits[0].rect.top
-        duck.jumping = False
+    # Verificar colisões
+    if check_collisions(duck, eagles, bullets, spikes, game_state):
+        show_game_over_popup(screen)
+        duck, lumberjack = reset_game()
 
-    # Desenho
+    # Limpar tela
     screen.fill(BLUE)  # Fundo azul
     pygame.draw.rect(screen, GREEN, (0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50))  # Chão
+
+    # Desenhar sprites
     all_sprites.draw(screen)
+
+    # Renderizar pontuação e vidas
+    score_text = font.render(f'Pontuação: {game_state.score}', True, (0, 0, 0))
+    lives_text = font.render(f'Vidas: {game_state.lives}', True, (0, 0, 0))
+    screen.blit(score_text, (10, 50))
+    screen.blit(lives_text, (10, 90))
     
+    # Mostrar status dos pums
+    pums_text = f'Pums: {duck.farts_remaining}'
+    if duck.farts_remaining == 0:
+        cooldown = max(0, duck.cooldown_timer / 1000)  # Converter para segundos
+        pums_text += f' (Cooldown: {cooldown:.1f}s)'
+    text_surface = font.render(pums_text, True, (0, 0, 0))
+    screen.blit(text_surface, (10, 10))
+
     # Atualização da tela
     pygame.display.flip()
     clock.tick(60)
