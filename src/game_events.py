@@ -25,7 +25,7 @@ def handle_events(duck, clouds=None):
     if keys[pygame.K_d]:
         duck.rect.x += 5  # Mover para direita
 
-def check_collisions(duck, eagles, bullets, spikes, game_state):
+def check_collisions(duck, eagles, bullets, spikes, clouds, game_state):
     # Colisão da bala com o Quack
     bullet_hits = pygame.sprite.spritecollide(duck, bullets, True)
     if bullet_hits:
@@ -40,6 +40,17 @@ def check_collisions(duck, eagles, bullets, spikes, game_state):
     spike_hits = pygame.sprite.spritecollide(duck, spikes, False)
     if spike_hits:
         game_state.lives -= 1
+        
+    # Colisão com nuvens usando máscaras para colisão precisa
+    for cloud in clouds:
+        if pygame.sprite.collide_mask(duck, cloud):
+            # Impede o pato de atravessar a nuvem
+            if duck.rect.bottom > cloud.rect.top and duck.rect.top < cloud.rect.top:
+                duck.rect.bottom = cloud.rect.top
+                duck.velocity_y = 0
+            elif duck.rect.top < cloud.rect.bottom and duck.rect.bottom > cloud.rect.bottom:
+                duck.rect.top = cloud.rect.bottom
+                duck.velocity_y = 0
 
     return game_state.lives <= 0
 

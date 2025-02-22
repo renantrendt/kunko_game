@@ -86,7 +86,7 @@ while running:
     all_sprites.update()
 
     # Verificar colisões
-    if check_collisions(duck, eagles, bullets, spikes, game_state):
+    if check_collisions(duck, eagles, bullets, spikes, clouds, game_state):
         show_game_over_popup(screen)
         duck, lumberjack = reset_game()
 

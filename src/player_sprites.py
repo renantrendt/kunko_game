@@ -80,22 +80,47 @@ class Duck(pygame.sprite.Sprite):
         self.velocity_y += self.gravity
         self.rect.y += self.velocity_y
         
+        # Flag para verificar se está em uma nuvem
+        on_cloud = False
+        
         # Verificar colisão com nuvens
         if clouds:
             for cloud in clouds:
-                if pygame.sprite.collide_mask(self, cloud):
-                    # Lógica de colisão com nuvem
-                    self.velocity_y = 0
-                    self.rect.bottom = cloud.rect.top
-                    self.jumping = False
+                # Verificar sobreposição horizontal
+                horizontal_overlap = (
+                    self.rect.left < cloud.rect.right and 
+                    self.rect.right > cloud.rect.left
+                )
+                
+                # Verificar colisão vertical
+                vertical_overlap = (
+                    self.rect.bottom >= cloud.rect.top and 
+                    self.rect.top < cloud.rect.bottom
+                )
+                
+                # Colisão precisa
+                if horizontal_overlap and vertical_overlap:
+                    # Se estiver no chão e pulando, teletransportar para cima da nuvem
+                    if self.rect.bottom >= SCREEN_HEIGHT - 50:
+                        self.rect.bottom = cloud.rect.top
+                        self.velocity_y = 0
+                        self.jumping = False
+                        on_cloud = True
+                    # Se estiver caindo, pousar na nuvem
+                    elif self.velocity_y > 0:
+                        self.velocity_y = 0
+                        self.rect.bottom = cloud.rect.top
+                        self.jumping = False
+                        on_cloud = True
+                    break
         
         # Limites verticais
-        if self.rect.bottom >= SCREEN_HEIGHT - 50:
+        if not on_cloud and self.rect.bottom >= SCREEN_HEIGHT - 50:
             self.rect.bottom = SCREEN_HEIGHT - 50
             self.velocity_y = 0
             self.jumping = False
         
-        # Resetar pulos SEMPRE
+        # Resetar pulos em qualquer situação
         self.space_jumps_remaining = 2
         self.w_jumps_remaining = 2
         
