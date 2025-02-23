@@ -17,6 +17,7 @@ class Duck(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.gravity = 0.5
         self.jump_strength = -10
+        self.space_jump_strength = -70  # Ajuste esse valor para a força do pulo do Space
         self.jumping = False
         self.jumps_remaining = 2
         
@@ -145,7 +146,7 @@ class Duck(pygame.sprite.Sprite):
         # Lógica de pulo com tratamento separado para Space e W
         if jump_type == 'space':
             if self.space_jumps_remaining > 0 and (self.space_consecutive_jumps < 2 or self.space_cooldown_timer <= 0):
-                self.velocity_y = -20  # Pulo forte
+                self.velocity_y = self.space_jump_strength  # Pulo forte
                 self.jumping = True
                 self.space_jumps_remaining -= 1
                 self.space_consecutive_jumps += 1
