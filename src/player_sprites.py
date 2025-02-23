@@ -223,6 +223,20 @@ class Lumberjack(pygame.sprite.Sprite):
         
         # Shotgun
         self.shotgun = Shotgun(self)
+        self._last_update = pygame.time.get_ticks()
+
+    def auto_shoot(self, target, all_sprites, bullets):
+        current_time = pygame.time.get_ticks()
+        if current_time - self._last_update > 1000:  # Cooldown reduzido para 500 ms
+            bullet = self.shotgun.shoot(target.rect.centerx, target.rect.centery)
+            all_sprites.add(bullet)
+            bullets.add(bullet)
+            self._last_update = current_time
+            return bullet
+        return None
+
+    def auto_shoot_at_duck(self, duck, all_sprites, bullets):
+        return self.auto_shoot(duck, all_sprites, bullets)
 
 class Shotgun(pygame.sprite.Sprite):
     def __init__(self, lumberjack):
@@ -254,6 +268,10 @@ class Shotgun(pygame.sprite.Sprite):
 
     def get_bullet_start_pos(self):
         return self.rect.left, self.rect.centery
+
+    def shoot(self, target_x, target_y):
+        bullet_start_x, bullet_start_y = self.get_bullet_start_pos()
+        return Bullet(bullet_start_x, bullet_start_y, target_x, target_y)
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, start_x, start_y, target_x, target_y):

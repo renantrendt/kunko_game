@@ -1,11 +1,19 @@
 import sys
 import pygame
 
-def handle_events(duck, clouds=None):
+def handle_events(duck, lumberjack, all_sprites, bullets):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Atirar quando clicar com o mouse
+            if event.button == 1:  # Botão esquerdo do mouse
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                bullet = lumberjack.shotgun.shoot(mouse_x, mouse_y)
+                bullets.add(bullet)
+                all_sprites.add(bullet)
         
         if event.type == pygame.KEYDOWN:
             # Pulo

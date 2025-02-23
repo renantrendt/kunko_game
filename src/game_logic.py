@@ -77,6 +77,9 @@ class GameState:
             bullets.add(bullet)
             self.lumberjack_shoot_timer = 0
 
+    def update_shoot_timer(self, delta_time):
+        self.lumberjack_shoot_timer += delta_time
+
     def reset(self):
         self.score = 0
         self.difficulty_timer = 0

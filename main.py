@@ -74,11 +74,12 @@ while running:
     last_time = current_time
 
     # Eventos
-    handle_events(duck, clouds)
+    handle_events(duck, lumberjack, all_sprites, bullets)
 
     # Atualizar lógica do jogo
     game_state.update_difficulty(delta_time, clouds, all_sprites)
     game_state.spawn_eagle(eagles, all_sprites)
+    lumberjack.auto_shoot_at_duck(duck, all_sprites, bullets)
     game_state.spawn_spikes(spikes, all_sprites)
     game_state.shoot_bullet(lumberjack, duck, all_sprites, bullets)
 
