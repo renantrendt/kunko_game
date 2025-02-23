@@ -23,6 +23,7 @@ class GameState:
     def update_difficulty(self, delta_time, clouds, all_sprites):
         self.difficulty_timer += delta_time
         self.score_timer += delta_time
+        self.eagle_timer += delta_time
 
         # Aumentar pontuação
         if self.score_timer >= SCORE_INTERVAL:
@@ -52,14 +53,14 @@ class GameState:
                 self.current_difficulty_stage = i
 
     def spawn_eagle(self, eagles, all_sprites):
-        if self.eagle_timer >= 6000 and len(eagles) < 2:
+        if self.eagle_timer >= 5000 and len(eagles) < 3:
             eagle = Eagle()
             all_sprites.add(eagle)
             eagles.add(eagle)
             self.eagle_timer = 0
 
     def spawn_spikes(self, spikes, all_sprites):
-        if self.difficulty_timer >= 180000 and len(spikes) == 0:
+        if self.difficulty_timer >= 30000 and len(spikes) == 0:
             spike = Spikes()
             all_sprites.add(spike)
             spikes.add(spike)
@@ -79,6 +80,7 @@ class GameState:
 
     def update_shoot_timer(self, delta_time):
         self.lumberjack_shoot_timer += delta_time
+        self.eagle_timer += delta_time
 
     def reset(self):
         self.score = 0

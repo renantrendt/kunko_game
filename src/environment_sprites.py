@@ -48,5 +48,6 @@ class Spikes(pygame.sprite.Sprite):
         self.image = pygame.Surface((SCREEN_WIDTH, 35))  # Reduzido de 50
         self.image.fill((128, 128, 128))  # Cinza
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 0
         self.rect.y = SCREEN_HEIGHT - 35  # Ajustado para altura menor
