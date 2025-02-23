@@ -22,13 +22,13 @@ class Duck(pygame.sprite.Sprite):
         self.jumps_remaining = 2
         
         # Pulos separados para Space e W
-        self.space_jumps_remaining = 2
+        self.space_jumps_remaining = 1
         self.w_jumps_remaining = 2
         
         # Cooldowns separados para Space e W
         self.space_cooldown_timer = 0
         self.w_cooldown_timer = 0
-        self.space_cooldown_duration = 2000  # 2 segundos
+        self.space_cooldown_duration = 1000  # 1000 milissegundos
         self.w_cooldown_duration = 50  # 50 milissegundos
         
         # Contadores de pulos consecutivos
