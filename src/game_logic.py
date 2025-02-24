@@ -60,7 +60,7 @@ class GameState:
             self.eagle_timer = 0
 
     def spawn_spikes(self, spikes, all_sprites):
-        if self.difficulty_timer >= 120000 and len(spikes) == 0:
+        if self.difficulty_timer >= 60000 and len(spikes) == 0:
             spike = Spikes()
             all_sprites.add(spike)
             spikes.add(spike)

@@ -47,7 +47,7 @@ def check_collisions(duck, eagles, bullets, spikes, clouds, game_state):
         game_state.lives -= 1
 
     # Colisão com águias
-    eagle_hits = pygame.sprite.spritecollide(duck, eagles, False)
+    eagle_hits = pygame.sprite.spritecollide(duck, eagles, True)  # Remove eagle on collision
     if eagle_hits:
         game_state.lives -= 1
 
