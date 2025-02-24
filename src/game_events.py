@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 
 def handle_events(duck, lumberjack, all_sprites, bullets):
     for event in pygame.event.get():
@@ -33,7 +34,13 @@ def handle_events(duck, lumberjack, all_sprites, bullets):
     if keys[pygame.K_d]:
         duck.rect.x += 5  # Mover para direita
 
+# Variável para rastrear o tempo do último dano causado
+last_damage_time = 0
+# Tempo entre os danos em segundos (60 segundos e 14 segundos)
+damage_interval = 2
+
 def check_collisions(duck, eagles, bullets, spikes, clouds, game_state):
+    global last_damage_time
     # Colisão da bala com o Quack
     bullet_hits = pygame.sprite.spritecollide(duck, bullets, True)
     if bullet_hits:
@@ -47,8 +54,15 @@ def check_collisions(duck, eagles, bullets, spikes, clouds, game_state):
     # Colisão com espinhos
     spike_hits = pygame.sprite.spritecollide(duck, spikes, False)
     if spike_hits:
-        game_state.lives -= 1
-        
+        current_time = time.time()
+        # Verifica se o intervalo de dano foi atingido
+        if current_time - last_damage_time >= damage_interval:
+            last_damage_time = current_time
+            # Aqui você deve adicionar a lógica para causar dano ao jogador
+            # Exemplo: player.health -= damage_amount
+            game_state.lives -= 1
+            print('Dano causado!')
+
     # Colisão com nuvens usando máscaras para colisão precisa
     for cloud in clouds:
         if pygame.sprite.collide_mask(duck, cloud):

@@ -53,14 +53,14 @@ class GameState:
                 self.current_difficulty_stage = i
 
     def spawn_eagle(self, eagles, all_sprites):
-        if self.eagle_timer >= 5000 and len(eagles) < 3:
+        if self.eagle_timer >= 5000 and len(eagles) < 2:
             eagle = Eagle()
             all_sprites.add(eagle)
             eagles.add(eagle)
             self.eagle_timer = 0
 
     def spawn_spikes(self, spikes, all_sprites):
-        if self.difficulty_timer >= 30000 and len(spikes) == 0:
+        if self.difficulty_timer >= 120000 and len(spikes) == 0:
             spike = Spikes()
             all_sprites.add(spike)
             spikes.add(spike)
@@ -88,4 +88,4 @@ class GameState:
         self.current_difficulty_stage = 0
         self.eagle_timer = 0
         self.lumberjack_shoot_timer = 0
-        self.lives = 3
+        self.lives = 20000

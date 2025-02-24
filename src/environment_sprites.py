@@ -45,9 +45,23 @@ class Eagle(pygame.sprite.Sprite):
 class Spikes(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((SCREEN_WIDTH, 35))  # Reduzido de 50
-        self.image.fill((128, 128, 128))  # Cinza
+        spike_width = 60
+        spike_height = 60  # Aumentado para 50 pixels
+        num_spikes = SCREEN_WIDTH // spike_width + 1
+        
+        self.image = pygame.Surface((SCREEN_WIDTH, spike_height), pygame.SRCALPHA)
+        
+        # Desenha vários spikes ao longo da largura da tela
+        for i in range(num_spikes):
+            x = i * spike_width
+            # Desenha cada spike como um triângulo maior
+            pygame.draw.polygon(self.image, (255, 0, 0), [
+                (x, spike_height),  # Base esquerda
+                (x + spike_width//2, 0),  # Topo
+                (x + spike_width, spike_height)  # Base direita
+            ])
+        
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 0
-        self.rect.y = SCREEN_HEIGHT - 35  # Ajustado para altura menor
+        self.rect.y = SCREEN_HEIGHT - spike_height  # Ajusta a posição vertical

@@ -16,18 +16,18 @@ DIFFICULTY_STAGES = [
         'time': 30000,  # 30 segundos
         'score_multiplier': 2,
         'clouds_reduction': 0.8,  # 20% menos clouds
-        'speed_increase': 1.13  # 13% + speed
+        'speed_increase': 1.13,  # 13% + speed 
     },
     {
-        'time': 60000,  # 1 minuto
+        'time': 50000,  # 1 minuto
         'score_multiplier': 3,
         'clouds_reduction': 0.74,  # 26% menos clouds
-        'speed_increase': 1.26  # 26% + speed
+        'speed_increase': 1.26,  # 26% + speed
     },
     {
-        'time': 150000,  # 2 minutos e 30 segundos
+        'time': 60000,  # 2 minutos e 30 segundos
         'score_multiplier': 4,
-        'clouds_reduction': 0.55,  # 45% menos clouds
+        'clouds_reduction': 0.55,  # 40% menos clouds
         'speed_increase': 1.39  # 39% + speed
     }
 ]
