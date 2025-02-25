@@ -112,3 +112,12 @@ def show_game_over_popup(screen):
                 sys.exit()
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 waiting = False
+
+def game_loop(screen, duck):
+    clock = pygame.time.Clock()
+    running = True
+    while running:
+        handle_events(duck, lumberjack, all_sprites, bullets)
+        # Atualizar tela
+        pygame.display.flip()
+        clock.tick(60)

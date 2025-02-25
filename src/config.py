@@ -33,5 +33,5 @@ DIFFICULTY_STAGES = [
 ]
 
 # Pontuação
-SCORE_INTERVAL = 2000  # 2 segundos
+SCORE_INTERVAL = 10000  # 2 segundos
 BASE_SCORE = 10
