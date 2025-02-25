@@ -88,4 +88,4 @@ class GameState:
         self.current_difficulty_stage = 0
         self.eagle_timer = 0
         self.lumberjack_shoot_timer = 0
-        self.lives = 20000
+        self.lives = 30000
